@@ -1,41 +1,11 @@
-```json
+[phases.setup]
+nixPkgs = ["nodejs", "python311", "yarn"]
 
-{
+[phases.install]
+cmds = ["cd frontend && yarn install", "cd backend && pip install -r requirements.txt"]
 
-"$schema": "https://railway.app/railway.schema.json",
+[phases.build]
+cmds = ["cd frontend && yarn build"]
 
-"build": {
-
-"builder": "NIXPACKS"
-
-},
-
-"deploy": {
-
-"startCommand": "cd backend && python -m uvicorn server:app --host 0.0.0.0 --port $PORT",
-
-"restartPolicyType": "ON_FAILURE",
-
-"restartPolicyMaxRetries": 10
-
-},
-
-"environments": {
-
-"production": {
-
-"variables": {
-
-"PYTHON_VERSION": "3.11",
-
-"NODE_VERSION": "18"
-
-}
-
-}
-
-}
-
-}
-
-```
+[start]
+cmd = "cd backend && python -m uvicorn server:app --host 0.0.0.0 --port $PORT"
