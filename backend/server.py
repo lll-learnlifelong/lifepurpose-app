@@ -1,11 +1,8 @@
-from fastapi import FastAPI, APIRouter, HTTPException, Request
-from fastapi.security import HTTPBearer
+from fastapi import FastAPI, HTTPException
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
 from datetime import datetime
-from pydantic import BaseModel, EmailStr
-from typing import List, Optional
 
 # MongoDB connection
 mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
@@ -13,8 +10,7 @@ client = AsyncIOMotorClient(mongo_url)
 db = client.lifepurpose
 
 # Create the main app
-app = FastAPI(title="LifePurpose API")
-api_router = APIRouter(prefix="/api")
+app = FastAPI(title="LifePurpose API", version="1.0.0")
 
 # Health check endpoint
 @app.get("/health")
@@ -25,22 +21,21 @@ async def health_check():
         return {
             "status": "healthy",
             "timestamp": datetime.utcnow().isoformat(),
-            "database": "connected"
+            "database": "connected",
+            "message": "LifePurpose API is running!"
         }
     except Exception as e:
-        raise HTTPException(status_code=503, detail="Service unhealthy")
+        raise HTTPException(status_code=503, detail=f"Database connection failed: {str(e)}")
 
 @app.get("/")
 async def root():
     """Root endpoint"""
     return {
-        "message": "LifePurpose API",
-        "version": "1.0.0",
-        "status": "running"
+        "message": "🎉 LifePurpose API is live!",
+        "version": "1.0.0", 
+        "status": "running",
+        "docs": "/docs"
     }
-
-# Include router
-app.include_router(api_router)
 
 # CORS
 app.add_middleware(
